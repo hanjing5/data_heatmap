@@ -4,8 +4,8 @@
  */
 
 var express = require('express')
-  , routes = require('./routes')
-  , http = require('http');
+, routes = require('./routes')
+, http = require('http');
 
 var app = express();
 
@@ -36,38 +36,34 @@ function bay_zip(){
 var fs = require('fs');
 var bay_area_zip = [];
 fs.readFile('bay_area_zip.csv', 'utf8', function (err,data) {
-    if (err) {
-          return console.log(err);
-            }
-      x = data.split(',');
-      for (i = 0; i < x.length; i++){
-        bay_area_zip.push(parseInt(x[i]))
-      }
-      //console.log(bay_area_zip);
+  if (err) {
+    return console.log(err);
+  }
+  x = data.split(',');
+  for (i = 0; i < x.length; i++){
+    bay_area_zip.push(parseInt(x[i]))
+  }
+  //console.log(bay_area_zip);
 });
 
 function include(arr,obj) {
-      return (arr.indexOf(obj) != -1);
+  return (arr.indexOf(obj) != -1);
 }
 app.get('/', function(req, res) {
   console.log(bay_area_zip);
   DataProvider.find({"rzip5": {"$in": bay_area_zip}}, function(error, docs) {
-    //console.log(docs.length);
-    //console.log(docs[1]);
     var data = "[[ 'Zip' , 'Population', 'Area'],";
     for (i = 0; i < docs.length; i++){
-      //console.log(docs[i]);
-      //console.log(docs[i].rzip5);
       var z = docs[i];
       var e = "[ '" + z.rzip5+"',"+z.total_pop+"," +z.total_pop + "],";
       data += e;
     }
     data = data.substring(0, data.length-1) + "]";
     res.render('index.jade', {
-                title: 'Data',
-                articles:docs,
-                foo: 2000000,
-                data_list :data
+      title: 'Data',
+      articles:docs,
+      data_list :data,
+      foo: 2000000
     });
   })
 
